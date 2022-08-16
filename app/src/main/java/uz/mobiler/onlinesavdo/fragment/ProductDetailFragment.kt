@@ -48,9 +48,6 @@ class ProductDetailFragment : Fragment() {
             (requireActivity() as AppCompatActivity).findViewById<SmoothBottomBar>(R.id.bottomBar).visibility =
                 View.GONE
 
-            (requireActivity() as AppCompatActivity).findViewById<Toolbar>(R.id.toolbar1).visibility =
-                View.GONE
-
             back.setOnClickListener {
                 Navigation.findNavController(binding.root).popBackStack()
             }
@@ -88,7 +85,6 @@ class ProductDetailFragment : Fragment() {
             }
 
             addCard.setOnClickListener {
-//                val productModel=ProductModel(item.id,item.name,item.price,item.image,item.category_id,item.created_at,item.updated_at,1)
                 item.cartCount=1
                 PrefUtils.setCart(item)
                 Navigation.findNavController(root).popBackStack()

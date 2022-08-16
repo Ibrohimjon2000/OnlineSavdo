@@ -6,6 +6,11 @@
         android:title="" />
 
     <item
+        android:id="@+id/searchFragment"
+        android:icon="@drawable/ic_search"
+        android:title="" />
+
+    <item
         android:id="@+id/favoriteFragment"
         android:icon="@drawable/ic_favorite_border"
         android:title="" />
@@ -13,11 +18,6 @@
     <item
         android:id="@+id/cartFragment"
         android:icon="@drawable/ic_cart"
-        android:title="" />
-
-    <item
-        android:id="@+id/profileFragment"
-        android:icon="@drawable/ic_baseline_person_outline_24"
         android:title="" />
 
 </menu>

@@ -19,6 +19,7 @@ import uz.mobiler.onlinesavdo.adapters.ProductAdapter
 import uz.mobiler.onlinesavdo.databinding.FragmentHomeBinding
 import uz.mobiler.onlinesavdo.library.SmoothBottomBar
 import uz.mobiler.onlinesavdo.model.CategoryModel
+import uz.mobiler.onlinesavdo.utils.Constants
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -40,8 +41,6 @@ class HomeFragment : Fragment() {
         binding.apply {
             (requireActivity() as AppCompatActivity).findViewById<SmoothBottomBar>(R.id.bottomBar).visibility =
                 View.VISIBLE
-            (requireActivity() as AppCompatActivity).findViewById<Toolbar>(R.id.toolbar1).visibility =
-                View.VISIBLE
 
             swipe.setOnRefreshListener {
                 loadData()
@@ -60,7 +59,7 @@ class HomeFragment : Fragment() {
             viewModel.offersData.observe(requireActivity()) {
                 carouselView.setImageListener { position, imageView ->
                     Glide.with(imageView)
-                        .load("http://osonsavdo.herokuapp.com/images/${it[position].image}")
+                        .load(Constants.HOST_IMAGE+ it[position].image)
                         .apply(
                             RequestOptions().placeholder(R.drawable.plase_img)
                                 .centerCrop()

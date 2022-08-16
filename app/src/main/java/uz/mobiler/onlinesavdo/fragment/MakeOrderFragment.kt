@@ -46,8 +46,6 @@ class MakeOrderFragment : Fragment() {
             }
             (requireActivity() as AppCompatActivity).findViewById<SmoothBottomBar>(R.id.bottomBar).visibility =
                 View.GONE
-            (requireActivity() as AppCompatActivity).findViewById<Toolbar>(R.id.toolbar1).visibility =
-                View.GONE
 
             tvPrice.text =
                 items.sumByDouble { it.cartCount * (it.price.replace(" ", "").toDoubleOrNull()!!) }

@@ -68,8 +68,7 @@ class FavoriteFragment : Fragment() {
         binding.apply {
             (requireActivity() as AppCompatActivity).findViewById<SmoothBottomBar>(R.id.bottomBar).visibility =
                 View.VISIBLE
-            (requireActivity() as AppCompatActivity).findViewById<Toolbar>(R.id.toolbar1).visibility =
-                View.VISIBLE
+
             swipe.setOnRefreshListener {
                 loadData()
             }

@@ -114,8 +114,11 @@
                 android:layout_height="60dp"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/edit_text_background"
+                android:ellipsize="end"
+
                 android:focusable="false"
                 android:hint="Delivery address"
+                android:maxLines="1"
                 android:paddingLeft="20dp"
                 android:textColor="@color/black"
                 android:textColorHint="#80221313" />
