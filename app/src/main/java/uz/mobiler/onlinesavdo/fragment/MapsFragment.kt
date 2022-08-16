@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -21,10 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.Place.Field.NAME
 import com.google.android.libraries.places.api.net.PlacesClient
-import org.greenrobot.eventbus.EventBus
 import uz.mobiler.onlinesavdo.R
 import uz.mobiler.onlinesavdo.databinding.FragmentMapsBinding
 import uz.mobiler.onlinesavdo.model.AddressModel
@@ -35,8 +31,8 @@ class MapsFragment : Fragment() {
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var placesClient: PlacesClient
-    private var locationPermissionGranted=false
-    private  var lastKnownLocation:Location?=null
+    private var locationPermissionGranted = false
+    private var lastKnownLocation: Location? = null
     private val TAG = "MapsFragment"
 
     private val callback = OnMapReadyCallback { googleMap ->
@@ -45,7 +41,7 @@ class MapsFragment : Fragment() {
         getDeviceLocation()
     }
 
-    companion object{
+    companion object {
         val REQUEST_KEY = "request_key"
         val BUNDLE_KEY = "bundle_key"
     }
@@ -64,7 +60,6 @@ class MapsFragment : Fragment() {
                     mMap.cameraPosition.target.latitude,
                     mMap.cameraPosition.target.longitude,
                 )
-                EventBus.getDefault().post(addressModel)
                 setFragmentResult(REQUEST_KEY, bundleOf(BUNDLE_KEY to addressModel))
                 Navigation.findNavController(root).popBackStack()
             }
@@ -85,13 +80,14 @@ class MapsFragment : Fragment() {
             LocationServices.getFusedLocationProviderClient(requireActivity())
     }
 
-    private val locationPermissionLauncher=registerForActivityResult(ActivityResultContracts.RequestPermission()){
-        if (it){
-            locationPermissionGranted=true
-            updateLocationUi()
-            getDeviceLocation()
+    private val locationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                locationPermissionGranted = true
+                updateLocationUi()
+                getDeviceLocation()
+            }
         }
-    }
 
     private fun getDeviceLocation() {
         try {
@@ -101,16 +97,25 @@ class MapsFragment : Fragment() {
                     if (task.isSuccessful) {
                         lastKnownLocation = task.result
                         if (lastKnownLocation != null) {
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                LatLng(lastKnownLocation!!.latitude,
-                                    lastKnownLocation!!.longitude), 8.toFloat()))
+                            mMap.moveCamera(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(
+                                        lastKnownLocation!!.latitude,
+                                        lastKnownLocation!!.longitude
+                                    ), 8.toFloat()
+                                )
+                            )
                         }
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.")
                         Log.e(TAG, "Exception: %s", task.exception)
                         mMap.moveCamera(
                             CameraUpdateFactory
-                            .newLatLngZoom(LatLng(41.34093109206405,69.28673341870308), 8.toFloat()))
+                                .newLatLngZoom(
+                                    LatLng(41.34093109206405, 69.28673341870308),
+                                    8.toFloat()
+                                )
+                        )
                         mMap.uiSettings.isMyLocationButtonEnabled = false
                     }
                 }

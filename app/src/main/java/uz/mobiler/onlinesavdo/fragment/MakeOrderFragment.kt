@@ -9,8 +9,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.Navigation
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 import uz.mobiler.onlinesavdo.R
 import uz.mobiler.onlinesavdo.databinding.FragmentMakeOrderBinding
 import uz.mobiler.onlinesavdo.library.SmoothBottomBar
@@ -33,16 +31,17 @@ class MakeOrderFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
     }
+
     private lateinit var binding: FragmentMakeOrderBinding
-    private lateinit var items:List<ProductModel>
+    private lateinit var items: List<ProductModel>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding=FragmentMakeOrderBinding.inflate(inflater,container,false)
+        binding = FragmentMakeOrderBinding.inflate(inflater, container, false)
         binding.apply {
-            if (param1!=null) {
+            if (param1 != null) {
                 items = param1 as List<ProductModel>
             }
             (requireActivity() as AppCompatActivity).findViewById<SmoothBottomBar>(R.id.bottomBar).visibility =
@@ -50,7 +49,9 @@ class MakeOrderFragment : Fragment() {
             (requireActivity() as AppCompatActivity).findViewById<Toolbar>(R.id.toolbar1).visibility =
                 View.GONE
 
-            tvPrice.text = items.sumByDouble { it.cartCount*(it.price.replace(" ","").toDoubleOrNull()!!)}.toString()
+            tvPrice.text =
+                items.sumByDouble { it.cartCount * (it.price.replace(" ", "").toDoubleOrNull()!!) }
+                    .toString()
 
             setFragmentResultListener(MapsFragment.REQUEST_KEY) { key, bundle ->
                 val address = bundle.getSerializable(MapsFragment.BUNDLE_KEY) as AddressModel
@@ -62,7 +63,7 @@ class MakeOrderFragment : Fragment() {
             }
 
             address.setOnClickListener {
-               Navigation.findNavController(root).navigate(R.id.mapsFragment)
+                Navigation.findNavController(root).navigate(R.id.mapsFragment)
             }
 
             addCard.setOnClickListener {
