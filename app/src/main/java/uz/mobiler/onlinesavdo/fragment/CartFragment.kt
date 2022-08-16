@@ -30,6 +30,7 @@ class CartFragment : Fragment() {
     private var param2: String? = null
     private lateinit var binding: FragmentCartBinding
     lateinit var viewModel: MainViewModel
+    private var productList: List<ProductModel> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,11 +48,17 @@ class CartFragment : Fragment() {
         viewModel.progress.observe(requireActivity()) {
             binding.swipe.isRefreshing = it
         }
+
         viewModel.productsData.observe(requireActivity()) {
-//            val cartList = PrefUtils.getCartList()
-//            for (i in it.indices) {
-//                it[i].cartCount= cartList[i].count
-//            }
+            val cartList = PrefUtils.getCartList()
+            cartList.forEach { cartModel ->
+                it.forEach { productModel ->
+                    if (productModel.id == cartModel.product_id) {
+                        productModel.cartCount = cartModel.count
+                    }
+                }
+            }
+
             if (it.isNotEmpty()) {
                 binding.lottie.visibility = View.INVISIBLE
             } else {
@@ -60,6 +67,7 @@ class CartFragment : Fragment() {
             binding.rvProducts.adapter = CartAdapter(it)
 
             binding.makeOrder.isClickable = it.isNotEmpty()
+
         }
     }
 
@@ -71,16 +79,19 @@ class CartFragment : Fragment() {
         binding.apply {
             (requireActivity() as AppCompatActivity).findViewById<SmoothBottomBar>(R.id.bottomBar).visibility =
                 View.VISIBLE
-
             swipe.setOnRefreshListener {
                 loadData()
             }
+
             loadData()
 
             makeOrder.setOnClickListener {
-                val bundle=Bundle()
-                bundle.putSerializable(Constants.EXTRA_DATA,(viewModel.productsData.value?: emptyList())as Serializable)
-                Navigation.findNavController(root).navigate(R.id.makeOrderFragment,bundle)
+                val bundle = Bundle()
+                bundle.putSerializable(
+                    Constants.EXTRA_DATA,
+                    (viewModel.productsData.value ?: emptyList()) as Serializable
+                )
+                Navigation.findNavController(root).navigate(R.id.makeOrderFragment, bundle)
             }
         }
         return binding.root

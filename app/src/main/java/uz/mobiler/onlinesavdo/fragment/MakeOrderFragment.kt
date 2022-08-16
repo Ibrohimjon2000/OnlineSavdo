@@ -47,9 +47,13 @@ class MakeOrderFragment : Fragment() {
             (requireActivity() as AppCompatActivity).findViewById<SmoothBottomBar>(R.id.bottomBar).visibility =
                 View.GONE
 
-            tvPrice.text =
-                items.sumByDouble { it.cartCount * (it.price.replace(" ", "").toDoubleOrNull()!!) }
-                    .toString()
+            var sum=0
+            items.forEach {
+                val price = it.price.replace(" ", "")
+                val priceInt = price.toInt()
+                sum+=it.cartCount*priceInt
+            }
+            tvPrice.text =sum.toString()
 
             setFragmentResultListener(MapsFragment.REQUEST_KEY) { key, bundle ->
                 val address = bundle.getSerializable(MapsFragment.BUNDLE_KEY) as AddressModel
