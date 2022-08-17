@@ -7,18 +7,18 @@ import uz.mobiler.onlinesavdo.model.CategoryModel
 import uz.mobiler.onlinesavdo.model.OfferModel
 import uz.mobiler.onlinesavdo.model.ProductModel
 
- class MainViewModel : ViewModel() {
+class MainViewModel : ViewModel() {
     val repository = ShopRepository()
 
     val error = MutableLiveData<String>()
-     val progress=MutableLiveData<Boolean>()
+    val progress = MutableLiveData<Boolean>()
 
     val offersData = MutableLiveData<List<OfferModel>>()
     val categoriesData = MutableLiveData<List<CategoryModel>>()
     val productsData = MutableLiveData<List<ProductModel>>()
 
     fun getOffers() {
-        repository.getOffers(error,progress, offersData)
+        repository.getOffers(error, progress, offersData)
     }
 
     fun getCategories() {
@@ -29,11 +29,15 @@ import uz.mobiler.onlinesavdo.model.ProductModel
         repository.getTopProducts(error, productsData)
     }
 
-    fun getCategoryProducts(id:Int) {
-        repository.getCategoryProducts(id,error, productsData)
+    fun getTopRefreshProducts() {
+        repository.getTopRefreshProducts(error, progress, productsData)
     }
 
-    fun getProductsByIds(ids:List<Int>) {
-        repository.getProductsByIds(ids,error,progress ,productsData)
+    fun getCategoryProducts(id: Int) {
+        repository.getCategoryProducts(id, error, productsData)
+    }
+
+    fun getProductsByIds(ids: List<Int>) {
+        repository.getProductsByIds(ids, error, progress, productsData)
     }
 }

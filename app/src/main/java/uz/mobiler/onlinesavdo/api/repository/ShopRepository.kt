@@ -106,6 +106,39 @@ class ShopRepository {
         )
     }
 
+
+    fun getTopRefreshProducts(
+        error: MutableLiveData<String>,
+        process: MutableLiveData<Boolean>,
+        success: MutableLiveData<List<ProductModel>>
+    ) {
+        process.value = true
+        compositeDisposable.add(
+            ApiClient.getRetrofit().create(ApiService::class.java).getTopProducts()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableObserver<BaseResponse<List<ProductModel>>>() {
+                    override fun onNext(t: BaseResponse<List<ProductModel>>) {
+                        process.value = false
+                        if (t.success) {
+                            success.value = t.data
+                        } else {
+                            error.value = t.message
+                        }
+                    }
+
+                    override fun onError(e: Throwable) {
+                        process.value = false
+                        error.value = e.localizedMessage
+                    }
+
+                    override fun onComplete() {
+
+                    }
+                })
+        )
+    }
+
     fun getCategoryProducts(
         id: Int,
         error: MutableLiveData<String>,

@@ -59,7 +59,7 @@ class MakeOrderFragment : Fragment() {
 
             setFragmentResultListener(MapsFragment.REQUEST_KEY) { key, bundle ->
                 val address = bundle.getSerializable(MapsFragment.BUNDLE_KEY) as AddressModel
-                binding.address.setText("${address.latitude}, ${address.longitude}")
+                binding.address.text = "${address.latitude}, ${address.longitude}"
             }
 
             back.setOnClickListener {

@@ -1,35 +1,28 @@
 package uz.mobiler.onlinesavdo.adapters
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import uz.mobiler.onlinesavdo.R
-import uz.mobiler.onlinesavdo.databinding.FragmentHomeBinding
-import uz.mobiler.onlinesavdo.databinding.FragmentSearchBinding
 import uz.mobiler.onlinesavdo.databinding.ItemPtoductBinding
-import uz.mobiler.onlinesavdo.model.CategoryModel
 import uz.mobiler.onlinesavdo.model.ProductModel
 import uz.mobiler.onlinesavdo.utils.Constants
 
 class ProductSearchAdapter(
-    val binding: FragmentSearchBinding,
-    var items: List<ProductModel>
+    var items: List<ProductModel>,
+    val listener: OnItemClickListener
 ) :
     RecyclerView.Adapter<ProductSearchAdapter.Vh>() {
 
     inner class Vh(val itemPtoductBinding: ItemPtoductBinding) :
         RecyclerView.ViewHolder(itemPtoductBinding.root) {
-        fun onBind(item: ProductModel) {
+        fun onBind(item: ProductModel, position: Int) {
             itemPtoductBinding.apply {
 
                 itemView.setOnClickListener {
-                    val bundle=Bundle()
-                    bundle.putSerializable(Constants.EXTRA_DATA,item)
-                    Navigation.findNavController(binding.root).navigate(R.id.productDetailFragment,bundle)
+                    listener.onItemClickListener(item, position)
                 }
 
                 Glide.with(itemView.context)
@@ -40,21 +33,21 @@ class ProductSearchAdapter(
                     )
                     .into(imgProduct)
                 tvName.text = item.name
-                tvPrice.text = item.price+" so'm"
+                tvPrice.text = item.price + " so'm"
 
-                if(item.name.startsWith("Смартфон")){
+                if (item.name.startsWith("Смартфон")) {
                     tvCategoryName.text = "Telefonlar"
-                }else if (item.name.startsWith("Планшет")){
+                } else if (item.name.startsWith("Планшет")) {
                     tvCategoryName.text = "Planshetlar"
-                }else if (item.name.startsWith("Смарт ")){
+                } else if (item.name.startsWith("Смарт ")) {
                     tvCategoryName.text = "Smart vatch va brasletlar"
-                }else if (item.name.startsWith("Ноутбук")){
+                } else if (item.name.startsWith("Ноутбук")) {
                     tvCategoryName.text = "Noutbooklar"
-                }else if (item.name.startsWith("Монитор")){
+                } else if (item.name.startsWith("Монитор")) {
                     tvCategoryName.text = "Monitorlar"
-                }else if (item.name.startsWith("Клавиатура")){
+                } else if (item.name.startsWith("Клавиатура")) {
                     tvCategoryName.text = "Klaviatura va sichqonchalar"
-                }else if (item.name.startsWith("Мышь")){
+                } else if (item.name.startsWith("Мышь")) {
                     tvCategoryName.text = "Klaviatura va sichqonchalar"
                 }
             }
@@ -67,7 +60,7 @@ class ProductSearchAdapter(
 
     override fun onBindViewHolder(holder: Vh, position: Int) {
         val item = items[position]
-        holder.onBind(item)
+        holder.onBind(item, position)
     }
 
     override fun getItemCount(): Int {
@@ -77,5 +70,9 @@ class ProductSearchAdapter(
     fun filterList(filteredList: ArrayList<ProductModel>) {
         items = filteredList
         notifyDataSetChanged()
+    }
+
+    interface OnItemClickListener {
+        fun onItemClickListener(item: ProductModel, position: Int)
     }
 }

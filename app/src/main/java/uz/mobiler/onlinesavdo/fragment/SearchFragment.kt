@@ -10,12 +10,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import uz.mobiler.onlinesavdo.MainViewModel
 import uz.mobiler.onlinesavdo.R
 import uz.mobiler.onlinesavdo.adapters.ProductSearchAdapter
 import uz.mobiler.onlinesavdo.databinding.FragmentSearchBinding
 import uz.mobiler.onlinesavdo.library.SmoothBottomBar
 import uz.mobiler.onlinesavdo.model.ProductModel
+import uz.mobiler.onlinesavdo.utils.Constants
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -25,6 +27,7 @@ class SearchFragment : Fragment() {
     private var param2: String? = null
     private lateinit var productSearchAdapter: ProductSearchAdapter
     lateinit var viewModel: MainViewModel
+    private lateinit var binding: FragmentSearchBinding
     private var list: List<ProductModel> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,10 +36,62 @@ class SearchFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        binding = FragmentSearchBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-    }
 
-    private lateinit var binding: FragmentSearchBinding
+        viewModel.productsData.observe(requireActivity()) {
+            list = it
+            if (it.isNotEmpty()) {
+                binding.lottie.visibility = View.INVISIBLE
+            } else {
+                binding.lottie.visibility = View.VISIBLE
+            }
+
+            productSearchAdapter =
+                ProductSearchAdapter(it, object : ProductSearchAdapter.OnItemClickListener {
+                    override fun onItemClickListener(item: ProductModel, position: Int) {
+                        val bundle = Bundle()
+                        bundle.putSerializable(Constants.EXTRA_DATA, item)
+                        Navigation.findNavController(binding.root)
+                            .navigate(R.id.productDetailFragment, bundle)
+                        binding.search.setText("")
+                    }
+                })
+
+            binding.search.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                    val text = p0.toString()
+                    if (text.isNotEmpty()) {
+                        binding.clearText.visibility = View.VISIBLE
+                    } else {
+                        binding.clearText.visibility = View.GONE
+                    }
+                    filter(text)
+                }
+            })
+
+            binding.clearText.setOnClickListener {
+                binding.search.setText("")
+            }
+            binding.rv.adapter = productSearchAdapter
+        }
+
+        viewModel.error.observe(requireActivity()) {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
+
+        viewModel.progress.observe(requireActivity()) {
+            binding.swipe.isRefreshing = it
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,49 +102,18 @@ class SearchFragment : Fragment() {
             (requireActivity() as AppCompatActivity).findViewById<SmoothBottomBar>(R.id.bottomBar).visibility =
                 View.VISIBLE
 
+            swipe.setOnRefreshListener {
+                binding.search.setText("")
+                loadData()
+            }
             loadData()
 
-            viewModel.error.observe(requireActivity()) {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-            }
-
-            viewModel.productsData.observe(requireActivity()) {
-                list = it
-                if (it.isNotEmpty()) {
-                    binding.lottie.visibility = View.INVISIBLE
-                } else {
-                    binding.lottie.visibility = View.VISIBLE
-                }
-
-                productSearchAdapter = ProductSearchAdapter(binding, it)
-
-                binding.search.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-                    }
-
-                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-                    }
-
-                    override fun afterTextChanged(p0: Editable?) {
-                        val text = p0.toString()
-                        if (text.isNotEmpty()) {
-                            binding.clearText.visibility = View.VISIBLE
-                        } else {
-                            binding.clearText.visibility = View.GONE
-                        }
-                        filter(text)
-                    }
-                })
-
-                binding.clearText.setOnClickListener {
-                    binding.search.setText("")
-                }
-                rv.adapter = productSearchAdapter
-            }
         }
         return binding.root
+    }
+
+    fun loadData() {
+        viewModel.getTopRefreshProducts()
     }
 
     companion object {
@@ -103,10 +127,6 @@ class SearchFragment : Fragment() {
             }
     }
 
-    fun loadData() {
-        viewModel.getTopProducts()
-    }
-
     private fun filter(text: String) {
         val filteredList = ArrayList<ProductModel>()
         for (product in list) {
@@ -117,5 +137,10 @@ class SearchFragment : Fragment() {
             }
         }
         productSearchAdapter.filterList(filteredList)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.search.setText("")
     }
 }
