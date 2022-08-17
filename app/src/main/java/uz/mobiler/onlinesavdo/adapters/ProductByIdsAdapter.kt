@@ -42,7 +42,7 @@ class ProductByIdsAdapter(
                     )
                     .into(imgProduct)
                 tvName.text = item.name
-                tvPrice.text = item.price
+                tvPrice.text = item.price+" so'm"
 
                 if(item.name.startsWith("Смартфон")){
                     tvCategoryName.text = "Telefonlar"

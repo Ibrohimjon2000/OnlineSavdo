@@ -10,14 +10,15 @@ import uz.mobiler.onlinesavdo.databinding.ItemCardBinding
 import uz.mobiler.onlinesavdo.model.ProductModel
 import uz.mobiler.onlinesavdo.utils.Constants
 
-class CartAdapter(val items: List<ProductModel>) : RecyclerView.Adapter<CartAdapter.Vh>() {
+class CartAdapter(val items: List<ProductModel>,val listener: OnItemClickListener) :
+    RecyclerView.Adapter<CartAdapter.Vh>() {
 
     inner class Vh(val itemCardBinding: ItemCardBinding) :
         RecyclerView.ViewHolder(itemCardBinding.root) {
-        fun onBind(item: ProductModel) {
+        fun onBind(item: ProductModel,position: Int,holder: Vh) {
             itemCardBinding.apply {
                 tvName.text = item.name
-                tvPrice.text = item.price
+                tvPrice.text = item.price + " so'm"
                 count.text = item.cartCount.toString()
                 Glide.with(itemView.context)
                     .load(Constants.HOST_IMAGE + item.image)
@@ -26,6 +27,12 @@ class CartAdapter(val items: List<ProductModel>) : RecyclerView.Adapter<CartAdap
                             .centerCrop()
                     )
                     .into(imgProduct)
+                plus.setOnClickListener {
+                    listener.onItemPlusListener(item,position,holder)
+                }
+                minus.setOnClickListener {
+                    listener.onItemMinusListener(item,position,holder)
+                }
             }
         }
     }
@@ -35,10 +42,15 @@ class CartAdapter(val items: List<ProductModel>) : RecyclerView.Adapter<CartAdap
     }
 
     override fun onBindViewHolder(holder: Vh, position: Int) {
-        holder.onBind(items[position])
+        holder.onBind(items[position],position,holder)
     }
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    interface OnItemClickListener {
+        fun onItemPlusListener(item: ProductModel, position: Int, holder: Vh)
+        fun onItemMinusListener(item: ProductModel, position: Int, holder: Vh)
     }
 }

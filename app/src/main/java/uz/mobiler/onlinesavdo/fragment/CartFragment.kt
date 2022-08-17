@@ -23,14 +23,12 @@ import java.io.Serializable
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-private const val TAG = "CartFragment"
 
 class CartFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentCartBinding
     lateinit var viewModel: MainViewModel
-    private var productList: List<ProductModel> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +62,30 @@ class CartFragment : Fragment() {
             } else {
                 binding.lottie.visibility = View.VISIBLE
             }
-            binding.rvProducts.adapter = CartAdapter(it)
+            binding.rvProducts.adapter = CartAdapter(it,object :CartAdapter.OnItemClickListener{
+                override fun onItemPlusListener(
+                    item: ProductModel,
+                    position: Int,
+                    holder: CartAdapter.Vh
+                ) {
+                    item.cartCount+=1
+                    PrefUtils.setCart(item)
+                    holder.itemCardBinding.count.text=item.cartCount.toString()
+                }
+
+                override fun onItemMinusListener(
+                    item: ProductModel,
+                    position: Int,
+                    holder: CartAdapter.Vh
+                ) {
+                    if (item.cartCount>0) {
+                        item.cartCount -= 1
+                        PrefUtils.setCart(item)
+                        holder.itemCardBinding.count.text = item.cartCount.toString()
+                    }
+                }
+
+            })
 
             binding.makeOrder.isClickable = it.isNotEmpty()
 
